@@ -1,0 +1,3 @@
+A little retweeter bot that tweets slightly modified variations of
+users' tweets. You must use 'heroku config:add' to set the environment
+variables for Twitter API access.
