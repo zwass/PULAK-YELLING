@@ -1,4 +1,5 @@
-print "Hello"
+from sys import stderr
+print stderr, "Hello"
 import os
 import time
 import re
@@ -8,7 +9,7 @@ from datetime import datetime, timedelta
 #this package seems outdated, but it was super simple to set up
 import tweepy
 
-print "Very beginning..."
+print stderr, "Very beginning..."
 
 CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
 CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
@@ -28,13 +29,13 @@ EXPIRED_TIME = timedelta(minutes=2)
 
 URL_RE = ".+\..+"  # crude, but should handle most of what Pulak tweets
 
-print "Doing auth"
+print stderr, "Doing auth"
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 
-print "Auth done"
+print stderr, "Auth done"
 
 
 def send_tweet(message):
@@ -44,19 +45,19 @@ def send_tweet(message):
         if len(final_message + " " + footer) <= 140:
             final_message += " " + footer
     try:
-        print "Would have tweeted:"
-        print final_message
+        print stderr, "Would have tweeted:"
+        print stderr, final_message
         #api.update_status(final_message)
     except Exception as e:
         #this will print to heroku logs
-        print e
+        print stderr, e
 
 
 def to_upper(message):
     upper_message = []
     for token in message.split(" "):
         if is_link(token):
-            print "%s is a link" % token
+            print stderr, "%s is a link" % token
             upper_message.append(token)
         else:
             upper_message.append(token.upper())
@@ -67,20 +68,20 @@ def is_link(token):
     return True if re.match(URL_RE, token) else False
 
 if __name__ == "__main__":
-    print "Starting..."
+    print stderr, "Starting..."
     last_ids = {}  # keep track of id of last tweet from the stream
     for user in ACCOUNTS:
         last_ids[user] = 1
     while True:
         for user in ACCOUNTS:
-            print "Getting tweets for", user
+            print stderr, "Getting tweets for", user
             try:
                 #get most recent tweet
                 tweet = api.user_timeline(user,
                                           since_id=last_ids[user], count=1)[0]
             except IndexError:
                 #no tweeets found for this user
-                print "Error getting tweet for", user
+                print stderr, "Error getting tweet for", user
                 continue
             last_ids[user] = tweet.id
             if(datetime.now() - tweet.created_at < EXPIRED_TIME):
