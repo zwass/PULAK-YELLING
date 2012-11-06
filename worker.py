@@ -58,11 +58,10 @@ def is_link(token):
     return True if re.match(URL_RE, token) else False
 
 if __name__ == "__main__":
-    last_ids = {}  #keep track of id of last tweet from the stream
+    last_ids = {}  # keep track of id of last tweet from the stream
     for user in ACCOUNTS:
         last_ids[user] = 1
     while True:
-        time.sleep(DELAY)  #Avoid Twitter rate limiting
         for user in ACCOUNTS:
             try:
                 #get most recent tweet
@@ -74,4 +73,6 @@ if __name__ == "__main__":
                 continue
             last_ids[user] = tweet.id
             if(datetime.now() - tweet.created_at < EXPIRED_TIME):
-                send_tweet(to_upper(tweet.text))  #Tweet! Tweet!
+                send_tweet(to_upper(tweet.text))  # Tweet! Tweet!
+
+            time.sleep(DELAY)  # Avoid Twitter rate limiting
