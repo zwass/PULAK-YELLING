@@ -1,3 +1,4 @@
+print "Hello"
 import os
 import time
 import re
@@ -34,6 +35,7 @@ auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 
 print "Auth done"
+
 
 def send_tweet(message):
     final_message = message
