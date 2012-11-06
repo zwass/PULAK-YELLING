@@ -1,4 +1,3 @@
-import sys
 import os
 import time
 import re
@@ -24,7 +23,7 @@ DELAY = 12
 #this is to deal with tweets bizarrely repeating
 EXPIRED_TIME = timedelta(minutes=2)
 
-URL_RE = ".+\..+" #crude, but should handle most of what Pulak tweets
+URL_RE = ".+\..+"  #crude, but should handle most of what Pulak tweets
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
@@ -43,6 +42,7 @@ def send_tweet(message):
         #this will print to heroku logs
         print e
 
+
 def to_upper(message):
     upper_message = []
     for token in message.split(" "):
@@ -52,23 +52,26 @@ def to_upper(message):
         else:
             upper_message.append(token.upper())
     return " ".join(upper_message)
-        
+
+
 def is_link(token):
     return True if re.match(URL_RE, token) else False
-        
+
 if __name__ == "__main__":
-    last_ids = {} #keep track of id of last tweet from the stream
+    last_ids = {}  #keep track of id of last tweet from the stream
     for user in ACCOUNTS:
         last_ids[user] = 1
     while True:
-        time.sleep(DELAY) #Avoid Twitter rate limiting
+        time.sleep(DELAY)  #Avoid Twitter rate limiting
         for user in ACCOUNTS:
             try:
                 #get most recent tweet
-                tweet = api.user_timeline(user, since_id=last_ids[user], count=1)[0]
+                tweet = api.user_timeline(user,
+                                          since_id=last_ids[user], count=1)[0]
             except IndexError:
                 #no tweeets found for this user
+                print "Error getting tweet for", user
                 continue
             last_ids[user] = tweet.id
             if(datetime.now() - tweet.created_at < EXPIRED_TIME):
-                send_tweet(to_upper(tweet.text)) #Tweet! Tweet!
+                send_tweet(to_upper(tweet.text))  #Tweet! Tweet!
