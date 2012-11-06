@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 #this package seems outdated, but it was super simple to set up
 import tweepy
 
+print "Very beginning..."
+
 CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
 CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
 ACCESS_KEY = os.environ.get('ACCESS_KEY')
@@ -25,10 +27,13 @@ EXPIRED_TIME = timedelta(minutes=2)
 
 URL_RE = ".+\..+"  # crude, but should handle most of what Pulak tweets
 
+print "Doing auth"
+
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 
+print "Auth done"
 
 def send_tweet(message):
     final_message = message
