@@ -1,8 +1,9 @@
-import sys
+import traceback
 import os
 import time
 import re
 
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 #this package seems outdated, but it was super simple to set up
@@ -24,7 +25,7 @@ DELAY = 12
 #this is to deal with tweets bizarrely repeating
 EXPIRED_TIME = timedelta(minutes=2)
 
-URL_RE = ".+\..+" #crude, but should handle most of what Pulak tweets
+URL_RE = ".+\..+"  # crude, but should handle most of what Pulak tweets
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
@@ -39,9 +40,14 @@ def send_tweet(message):
             final_message += " " + footer
     try:
         api.update_status(final_message)
-    except Exception as e:
+        print "Tweeted:"
+        print final_message
+    except:
         #this will print to heroku logs
-        print e
+        print "Error sending tweet:"
+        print final_message
+        traceback.print_exc()
+
 
 def to_upper(message):
     upper_message = []
@@ -52,23 +58,30 @@ def to_upper(message):
         else:
             upper_message.append(token.upper())
     return " ".join(upper_message)
-        
+
+
 def is_link(token):
     return True if re.match(URL_RE, token) else False
-        
+
 if __name__ == "__main__":
-    last_ids = {} #keep track of id of last tweet from the stream
-    for user in ACCOUNTS:
-        last_ids[user] = 1
+    last_tweets = defaultdict(str)  # keep track of last tweet from the stream
     while True:
-        time.sleep(DELAY) #Avoid Twitter rate limiting
         for user in ACCOUNTS:
             try:
                 #get most recent tweet
-                tweet = api.user_timeline(user, since_id=last_ids[user], count=1)[0]
+                tweet = api.user_timeline(user)[0]
+                if tweet != last_tweets[user]:
+                    last_tweets[user] = tweet.text
+                    if(datetime.now() - tweet.created_at < EXPIRED_TIME):
+                        send_tweet(to_upper(tweet.text))  # Tweet! Tweet!
+                    else:
+                        print "Got tweet but it was too old for", user
+                        print tweet.text
+                else:
+                    print "Got same tweet for", user
             except IndexError:
                 #no tweeets found for this user
-                continue
-            last_ids[user] = tweet.id
-            if(datetime.now() - tweet.created_at < EXPIRED_TIME):
-                send_tweet(to_upper(tweet.text)) #Tweet! Tweet!
+                print "Error getting tweet for", user
+                traceback.print_exc()
+            finally:
+                time.sleep(DELAY)  # Avoid Twitter rate limiting
