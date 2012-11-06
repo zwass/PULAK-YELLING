@@ -23,7 +23,7 @@ DELAY = 12
 #this is to deal with tweets bizarrely repeating
 EXPIRED_TIME = timedelta(minutes=2)
 
-URL_RE = ".+\..+"  #crude, but should handle most of what Pulak tweets
+URL_RE = ".+\..+"  # crude, but should handle most of what Pulak tweets
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
@@ -37,7 +37,9 @@ def send_tweet(message):
         if len(final_message + " " + footer) <= 140:
             final_message += " " + footer
     try:
-        api.update_status(final_message)
+        print "Would have tweeted:"
+        print final_message
+        #api.update_status(final_message)
     except Exception as e:
         #this will print to heroku logs
         print e
@@ -58,11 +60,13 @@ def is_link(token):
     return True if re.match(URL_RE, token) else False
 
 if __name__ == "__main__":
+    print "Starting..."
     last_ids = {}  # keep track of id of last tweet from the stream
     for user in ACCOUNTS:
         last_ids[user] = 1
     while True:
         for user in ACCOUNTS:
+            print "Getting tweets for", user
             try:
                 #get most recent tweet
                 tweet = api.user_timeline(user,
