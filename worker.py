@@ -70,7 +70,7 @@ if __name__ == "__main__":
             try:
                 #get most recent tweet
                 tweet = api.user_timeline(user)[0]
-                if tweet != last_tweets[user]:
+                if tweet.text != last_tweets[user]:
                     last_tweets[user] = tweet.text
                     if(datetime.now() - tweet.created_at < EXPIRED_TIME):
                         send_tweet(to_upper(tweet.text))  # Tweet! Tweet!
