@@ -41,11 +41,11 @@ def send_tweet(message):
     try:
         api.update_status(final_message)
         print "Tweeted:"
-        print final_message
+        print final_message.encode('utf-8')
     except:
         #this will print to heroku logs
         print "Error sending tweet:"
-        print final_message
+        print final_message.encode('utf-8')
         traceback.print_exc()
 
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
                         send_tweet(to_upper(tweet.text))  # Tweet! Tweet!
                     else:
                         print "Got tweet but it was too old for", user
-                        print tweet.text
+                        print tweet.text.encode('utf-8')
                 else:
                     print "Got same tweet for", user
             except IndexError:
