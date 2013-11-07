@@ -16,7 +16,7 @@ ACCESS_SECRET = os.environ.get('ACCESS_SECRET')
 
 FOOTERS = ["#PULAKYELLING"]
 
-ACCOUNTS = ["pulakm", "pennapps"]
+ACCOUNTS = ["pulakm"]
 
 #how often to check for new tweets (careful of twitter rate limiting)
 DELAY = 12
